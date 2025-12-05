@@ -5,7 +5,7 @@
   <title>로또 번호 생성기('25.12.4 Update)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-000    * {
+    * {
       box-sizing: border-box;
     }
 
@@ -178,6 +178,7 @@
 
     .row {
       display: flex;
+      flex-wrap: wrap;          /* 화면이 좁으면 버튼이 아래줄로 내려가도록 */
       align-items: center;
       gap: 8px;
       padding: 8px 10px;
@@ -196,9 +197,12 @@
     .balls {
       display: flex;
       gap: 6px;
+      flex: 1;                 /* 남은 공간 채우기 */
+      min-width: 0;            /* flex 아이템이 줄어들 수 있도록 */
       flex-wrap: nowrap;
       overflow-x: auto;
       padding-bottom: 2px;
+      padding-right: 4px;      /* 복사 버튼과 겹쳐 보이지 않게 여백 */
     }
 
     .ball {
@@ -429,7 +433,7 @@
         const copyBtn = document.createElement("button");
         copyBtn.className = "copy-btn";
         copyBtn.type = "button";
-        copyBtn.innerHTML = "복사";
+        copyBtn.textContent = "복사";
         copyBtn.addEventListener("click", function () {
           copyToClipboard(textForCopy);
         });
