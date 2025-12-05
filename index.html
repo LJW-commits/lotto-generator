@@ -178,7 +178,7 @@
 
     .row {
       display: flex;
-      flex-wrap: wrap;          /* 화면이 좁으면 버튼이 아래줄로 내려가도록 */
+      flex-wrap: wrap;
       align-items: center;
       gap: 8px;
       padding: 8px 10px;
@@ -197,12 +197,12 @@
     .balls {
       display: flex;
       gap: 6px;
-      flex: 1;                 /* 남은 공간 채우기 */
-      min-width: 0;            /* flex 아이템이 줄어들 수 있도록 */
+      flex: 1;
+      min-width: 0;
       flex-wrap: nowrap;
       overflow-x: auto;
       padding-bottom: 2px;
-      padding-right: 4px;      /* 복사 버튼과 겹쳐 보이지 않게 여백 */
+      padding-right: 4px;
     }
 
     .ball {
@@ -219,17 +219,12 @@
       flex-shrink: 0;
     }
 
-    /* 번호 구간별 색상
-       1~10 : 노랑
-       11~20: 파랑
-       21~30: 빨강
-       31~40: 회색
-       41~45: 초록 */
-    .ball.n1 { background: #f1c40f; } /* 노랑 */
-    .ball.n2 { background: #3498db; } /* 파랑 */
-    .ball.n3 { background: #e74c3c; } /* 빨강 */
-    .ball.n4 { background: #7f8c8d; } /* 회색 */
-    .ball.n5 { background: #27ae60; } /* 초록 */
+    /* 번호 구간별 색상 */
+    .ball.n1 { background: #f1c40f; } /* 1~10 노랑 */
+    .ball.n2 { background: #3498db; } /* 11~20 파랑 */
+    .ball.n3 { background: #e74c3c; } /* 21~30 빨강 */
+    .ball.n4 { background: #7f8c8d; } /* 31~40 회색 */
+    .ball.n5 { background: #27ae60; } /* 41~45 초록 */
 
     .copy-btn {
       margin-left: auto;
@@ -250,6 +245,48 @@
 
     .copy-btn:active {
       background: #f0f0f0;
+    }
+
+    /* ===== 당첨 후 링크 버튼 영역 ===== */
+    .link-section {
+      margin-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .link-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: #ffffff;
+      border: 1px solid #eee;
+      text-decoration: none;
+      color: #444;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.04);
+      font-size: 13px;
+    }
+
+    .link-left {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .link-main {
+      font-weight: 600;
+    }
+
+    .link-sub {
+      font-size: 11px;
+      color: #aaa;
+    }
+
+    .link-icon {
+      font-size: 18px;
+      margin-left: 8px;
     }
 
     .toast {
@@ -327,6 +364,33 @@
 
       <div class="results" id="results"></div>
 
+      <!-- 당첨 후 이동 링크 버튼 3개 -->
+      <div class="link-section">
+        <a class="link-btn" href="https://www.porsche.com/kr/ko/" target="_blank" rel="noopener noreferrer">
+          <div class="link-left">
+            <div class="link-main">당첨되서 포르쉐 사러가기</div>
+            <div class="link-sub">포르쉐 공식 홈페이지로 이동</div>
+          </div>
+          <div class="link-icon">🏎️</div>
+        </a>
+
+        <a class="link-btn" href="https://www.shinsegae.com/" target="_blank" rel="noopener noreferrer">
+          <div class="link-left">
+            <div class="link-main">당첨되서 백화점 가기</div>
+            <div class="link-sub">신세계 백화점 메인 페이지</div>
+          </div>
+          <div class="link-icon">🛍️</div>
+        </a>
+
+        <a class="link-btn" href="https://www.coupang.com/" target="_blank" rel="noopener noreferrer">
+          <div class="link-left">
+            <div class="link-main">당첨되서 쿠팡쇼핑 가기</div>
+            <div class="link-sub">쿠팡 메인 쇼핑 페이지</div>
+          </div>
+          <div class="link-icon">🛒</div>
+        </a>
+      </div>
+
       <div class="footer">
         행운번호와 추천번호*를 조합해보세요.<br />
         *추천번호: 지금까지 당첨 번호 기반 대수의 법칙 적용🙂
@@ -354,7 +418,7 @@
 
     // 1~45 중에서 6개, 중복 없이 뽑기 (행운번호 우선 포함)
     function generateLottoNumbers(lucky) {
-      const numbers = [...lucky]; // 먼저 행운번호 채워 넣기
+      const numbers = [...lucky];
 
       while (numbers.length < 6) {
         const n = Math.floor(Math.random() * 45) + 1;
@@ -407,7 +471,7 @@
       const resultsEl = document.getElementById("results");
       resultsEl.innerHTML = "";
 
-      const luckyNumbers = getLuckyNumbers(); // 입력한 행운번호
+      const luckyNumbers = getLuckyNumbers();
 
       for (let i = 1; i <= count; i++) {
         const row = document.createElement("div");
