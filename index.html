@@ -2,8 +2,8 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>로또번호 생성기('25.12.15 Update)</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>로또 번호 생성기('25.12.4 Update)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <style>
     * { box-sizing: border-box; }
 
@@ -14,8 +14,8 @@
       background: radial-gradient(circle at top, #ffe08a 0, #f5f5f5 55%, #e0e0e0 100%);
       min-height: 100vh;
       display: flex;
-      justify-content: center;
       align-items: center;
+      justify-content: center;
     }
 
     .app {
@@ -25,7 +25,7 @@
     }
 
     .card {
-      background: #fff;
+      background: #ffffff;
       border-radius: 24px;
       box-shadow: 0 16px 40px rgba(0,0,0,0.08);
       padding: 20px 18px 22px;
@@ -33,8 +33,15 @@
 
     .app-header {
       display: flex;
+      align-items: center;
       justify-content: space-between;
       margin-bottom: 10px;
+    }
+
+    .title-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
     }
 
     h1 {
@@ -55,66 +62,128 @@
       background: #fff7d1;
       color: #b58900;
       border: 1px solid #ffe08a;
+      white-space: nowrap;
     }
 
     .controls {
       display: flex;
-      gap: 8px;
-      margin: 8px 0;
       align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+      margin-bottom: 8px;
     }
 
-    .controls input {
+    .controls label {
+      font-size: 13px;
+      color: #333;
+      white-space: nowrap;
+    }
+
+    .controls input[type="number"] {
       width: 70px;
-      padding: 6px;
+      padding: 6px 8px;
+      font-size: 14px;
       border-radius: 10px;
       border: 1px solid #ddd;
       text-align: center;
+      outline: none;
+    }
+
+    .controls input[type="number"]:focus {
+      border-color: #ffb300;
+      box-shadow: 0 0 0 2px rgba(255,179,0,0.25);
     }
 
     .main-btn {
       flex: 1;
+      cursor: pointer;
       border: none;
       border-radius: 999px;
-      padding: 10px;
+      padding: 10px 16px;
+      font-size: 15px;
       font-weight: 700;
       background: linear-gradient(135deg, #ffb300, #ff7a00);
       color: #fff;
+      box-shadow: 0 8px 18px rgba(255,122,0,0.35);
+      transition: transform 0.08s ease, box-shadow 0.08s ease, opacity 0.1s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      white-space: nowrap;
     }
 
+    .main-btn span { font-size: 16px; }
+
+    .main-btn:active {
+      transform: translateY(1px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      opacity: 0.95;
+    }
+
+    /* 나의 행운번호 영역 */
     .lucky-box {
+      margin-bottom: 10px;
+      padding: 10px 10px;
+      border-radius: 14px;
       background: #fffaf0;
       border: 1px solid #ffe9b3;
-      border-radius: 14px;
-      padding: 8px;
-      margin-bottom: 10px;
-    }
-
-    .lucky-inputs {
       display: flex;
-      gap: 6px;
+      flex-direction: column;
+      gap: 8px;
     }
 
-    .lucky-inputs input {
-      flex: 1;
-      padding: 6px;
+    .lucky-label {
+      font-size: 12px;
+      color: #b58900;
+    }
+
+    /* 3칸 그리드로 고정(모바일에서 삐져나오는 문제 방지) */
+    .lucky-inputs {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6px;
+      align-items: center;
+    }
+
+    .lucky-inputs input[type="number"] {
+      width: 100%;
+      padding: 6px 8px;
+      font-size: 14px;
       border-radius: 10px;
       border: 1px solid #ddd;
       text-align: center;
+      outline: none;
+      min-width: 0;
+    }
+
+    .lucky-inputs input[type="number"]:focus {
+      border-color: #ffb300;
+      box-shadow: 0 0 0 2px rgba(255,179,0,0.25);
+    }
+
+    .lucky-hint {
+      font-size: 11px;
+      color: #999;
     }
 
     .results {
+      margin-top: 4px;
       display: flex;
       flex-direction: column;
       gap: 10px;
+      max-height: 380px;
+      overflow-y: auto;
+      padding-right: 2px;
     }
 
-    /* ===== 핵심 수정 영역 ===== */
+    /* 한 줄을 라벨/공6개/복사 버튼 3칸으로 고정 */
     .row {
-      display: flex;
+      display: grid;
+      grid-template-columns: 44px 1fr 56px;
       align-items: center;
-      gap: 6px;
-      padding: 8px;
+      gap: 8px;
+      padding: 8px 10px;
       border-radius: 18px;
       background: #fafafa;
       border: 1px solid #eee;
@@ -126,44 +195,93 @@
       white-space: nowrap;
     }
 
+    /* 공 6개를 무조건 6칸 그리드로 고정 => 스크롤 없음 */
     .balls {
-      display: flex;
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
       gap: 6px;
-      flex: 1;
-      overflow: hidden;      /* 스크롤 제거 */
+      min-width: 0;
     }
 
     .ball {
-      width: 28px;
-      height: 28px;
+      width: 100%;
+      aspect-ratio: 1 / 1;
       border-radius: 50%;
       display: flex;
-      justify-content: center;
       align-items: center;
+      justify-content: center;
       font-size: 13px;
       font-weight: 700;
       color: #fff;
-      flex-shrink: 0;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+      user-select: none;
     }
 
-    .ball.n1 { background: #f1c40f; }
-    .ball.n2 { background: #3498db; }
-    .ball.n3 { background: #e74c3c; }
-    .ball.n4 { background: #7f8c8d; }
-    .ball.n5 { background: #27ae60; }
+    /* 번호 구간별 색상 */
+    .ball.n1 { background: #f1c40f; } /* 1~10 노랑 */
+    .ball.n2 { background: #3498db; } /* 11~20 파랑 */
+    .ball.n3 { background: #e74c3c; } /* 21~30 빨강 */
+    .ball.n4 { background: #7f8c8d; } /* 31~40 회색 */
+    .ball.n5 { background: #27ae60; } /* 41~45 초록 */
 
     .copy-btn {
-      border: 1px solid #ddd;
+      width: 56px;
+      cursor: pointer;
+      border: none;
       border-radius: 999px;
-      padding: 6px 10px;
+      padding: 6px 0;
       font-size: 11px;
-      background: #fff;
-      flex-shrink: 0;
+      font-weight: 600;
+      background: #ffffff;
+      color: #555;
+      border: 1px solid #ddd;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
     }
 
+    .copy-btn:active { background: #f0f0f0; }
+
+    /* ===== 링크 버튼 ===== */
+    .link-section {
+      margin-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .link-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: #ffffff;
+      border: 1px solid #eee;
+      text-decoration: none;
+      color: #444;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.04);
+      font-size: 13px;
+    }
+
+    .link-left { display: flex; flex-direction: column; gap: 2px; }
+    .link-main { font-weight: 600; }
+    .link-sub { font-size: 11px; color: #aaa; }
+    .link-icon { font-size: 18px; margin-left: 8px; }
+
+    /* ===== 쿠팡 배너 ===== */
     .coupang-banner {
       margin-top: 12px;
-      text-align: center;
+      display: flex;
+      justify-content: center;
+    }
+
+    .coupang-banner iframe {
+      width: 100%;
+      max-width: 480px;
+      height: 120px;
+      border: 0;
     }
 
     .footer {
@@ -171,100 +289,217 @@
       font-size: 11px;
       color: #999;
       text-align: center;
+      line-height: 1.5;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.8);
+      color: #fff;
+      font-size: 12px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+      z-index: 999;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(-4px);
+    }
+
+    /* 더 작은 화면(아주 좁은 기종) 보정 */
+    @media (max-width: 380px) {
+      .row { grid-template-columns: 42px 1fr 52px; gap: 6px; }
+      .balls { gap: 4px; }
+      .ball { font-size: 12px; }
+      .copy-btn { width: 52px; font-size: 10px; }
+    }
+
+    @media (max-width: 480px) {
+      .card { border-radius: 20px; padding: 18px 14px 20px; }
+      h1 { font-size: 18px; }
+      .results { max-height: 320px; }
     }
   </style>
 </head>
 <body>
-
-<div class="app">
-  <div class="card">
-
-    <div class="app-header">
-      <div>
-        <h1>로또 번호 생성기</h1>
-        <div class="subtitle">*1~1200회차 당첨 데이터 기반</div>
-      </div>
-      <div class="badge">6 / 45</div>
-    </div>
-
-    <div class="controls">
-      <input id="count" type="number" value="5" min="1" max="10">
-      <button class="main-btn" onclick="renderRows()">번호 생성</button>
-    </div>
-
-    <div class="lucky-box">
-      <div class="lucky-inputs">
-        <input id="lucky1" placeholder="1~45">
-        <input id="lucky2" placeholder="1~45">
-        <input id="lucky3" placeholder="1~45">
-      </div>
-    </div>
-
-    <div class="results" id="results"></div>
-
-    <div class="coupang-banner">
-      <iframe 
-        src="https://ads-partners.coupang.com/widgets.html?id=948403&template=carousel&trackingCode=AF4301864&width=480&height=120"
-        width="100%" height="120" frameborder="0">
-      </iframe>
-    </div>
-
-    <div class="footer">
-      이 포스팅은 쿠팡 파트너스 활동의 일환으로 수수료를 제공받을 수 있습니다.
-    </div>
-
-  </div>
-</div>
-
-<script>
-  function getLuckyNumbers() {
-    return ["lucky1","lucky2","lucky3"]
-      .map(id => parseInt(document.getElementById(id).value))
-      .filter(n => n >= 1 && n <= 45);
-  }
-
-  function generate(lucky) {
-    const nums = [...lucky];
-    while (nums.length < 6) {
-      const n = Math.floor(Math.random() * 45) + 1;
-      if (!nums.includes(n)) nums.push(n);
-    }
-    return nums.sort((a,b)=>a-b);
-  }
-
-  function color(n){
-    if(n<=10) return "n1";
-    if(n<=20) return "n2";
-    if(n<=30) return "n3";
-    if(n<=40) return "n4";
-    return "n5";
-  }
-
-  function renderRows() {
-    const cnt = parseInt(document.getElementById("count").value);
-    const lucky = getLuckyNumbers();
-    const wrap = document.getElementById("results");
-    wrap.innerHTML = "";
-
-    for(let i=1;i<=cnt;i++){
-      const nums = generate(lucky);
-      const row = document.createElement("div");
-      row.className="row";
-
-      row.innerHTML = `
-        <div class="row-label">${i} 게임</div>
-        <div class="balls">
-          ${nums.map(n=>`<div class="ball ${color(n)}">${n}</div>`).join("")}
+  <div class="app">
+    <div class="card">
+      <div class="app-header">
+        <div class="title-wrap">
+          <h1>로또 번호 생성기</h1>
+          <div class="subtitle">*1~1200회차(25.11.29) 당첨데이터 기반 번호 추출</div>
         </div>
-        <button class="copy-btn" onclick="navigator.clipboard.writeText('${nums.join(", ")}')">복사</button>
-      `;
-      wrap.appendChild(row);
+        <div class="badge">6 / 45</div>
+      </div>
+
+      <div class="controls">
+        <label for="count">게임 수</label>
+        <input id="count" type="number" min="1" max="10" value="5" />
+        <button id="generateBtn" class="main-btn">
+          <span>🎲</span> 번호 생성
+        </button>
+      </div>
+
+      <!-- 나의 행운번호 입력 영역 -->
+      <div class="lucky-box">
+        <div class="lucky-label">나의 행운번호 입력해보세요 (최대 3개)</div>
+        <div class="lucky-inputs">
+          <input id="lucky1" type="number" min="1" max="45" placeholder="1~45" />
+          <input id="lucky2" type="number" min="1" max="45" placeholder="1~45" />
+          <input id="lucky3" type="number" min="1" max="45" placeholder="1~45" />
+        </div>
+        <div class="lucky-hint">입력한 숫자는 각 게임에 자동으로 포함돼요.</div>
+      </div>
+
+      <div class="results" id="results"></div>
+
+      <!-- 당첨 후 이동 링크 버튼 -->
+      <div class="link-section">
+        <a class="link-btn" href="https://link.coupang.com/a/dbooCD" target="_blank" rel="noopener noreferrer">
+          <div class="link-left">
+            <div class="link-main">당첨됐으니까 그동안 못 샀던 거 사러 가기</div>
+            <div class="link-sub">쿠팡으로 이동</div>
+          </div>
+          <div class="link-icon">🛒</div>
+        </a>
+      </div>
+
+      <!-- 쿠팡파트너스 배너 -->
+      <div class="coupang-banner">
+        <iframe
+          src="https://ads-partners.coupang.com/widgets.html?id=948403&template=carousel&trackingCode=AF4301864&subId=&width=480&height=120&tsource="
+          scrolling="no"
+          referrerpolicy="unsafe-url"
+          browsingtopics>
+        </iframe>
+      </div>
+
+      <div class="footer">
+        이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast">클립보드에 복사되었습니다.</div>
+
+  <script>
+    function getLuckyNumbers() {
+      const ids = ["lucky1", "lucky2", "lucky3"];
+      const nums = [];
+
+      ids.forEach(id => {
+        const val = parseInt(document.getElementById(id).value, 10);
+        if (!isNaN(val) && val >= 1 && val <= 45 && !nums.includes(val)) {
+          nums.push(val);
+        }
+      });
+
+      return nums;
     }
-  }
 
-  renderRows();
-</script>
+    function generateLottoNumbers(lucky) {
+      const numbers = [...lucky];
 
+      while (numbers.length < 6) {
+        const n = Math.floor(Math.random() * 45) + 1;
+        if (!numbers.includes(n)) numbers.push(n);
+      }
+
+      numbers.sort((a, b) => a - b);
+      return numbers;
+    }
+
+    function getColorClass(num) {
+      if (num >= 1 && num <= 10) return "n1";
+      if (num >= 11 && num <= 20) return "n2";
+      if (num >= 21 && num <= 30) return "n3";
+      if (num >= 31 && num <= 40) return "n4";
+      return "n5";
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 1400);
+    }
+
+    async function copyToClipboard(text) {
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(text);
+        } else {
+          const textarea = document.createElement("textarea");
+          textarea.value = text;
+          document.body.appendChild(textarea);
+          textarea.select();
+          document.execCommand("copy");
+          document.body.removeChild(textarea);
+        }
+        showToast("번호 세트가 복사되었습니다.");
+      } catch (e) {
+        showToast("복사에 실패했습니다. 직접 복사해 주세요.");
+      }
+    }
+
+    function renderRows(count) {
+      const resultsEl = document.getElementById("results");
+      resultsEl.innerHTML = "";
+
+      const luckyNumbers = getLuckyNumbers();
+
+      for (let i = 1; i <= count; i++) {
+        const numbers = generateLottoNumbers(luckyNumbers);
+        const textForCopy = numbers.join(", ");
+
+        const row = document.createElement("div");
+        row.className = "row";
+
+        const label = document.createElement("div");
+        label.className = "row-label";
+        label.textContent = i + " 게임";
+
+        const ballsWrap = document.createElement("div");
+        ballsWrap.className = "balls";
+
+        numbers.forEach(num => {
+          const ball = document.createElement("div");
+          ball.className = "ball " + getColorClass(num);
+          ball.textContent = num;
+          ballsWrap.appendChild(ball);
+        });
+
+        const copyBtn = document.createElement("button");
+        copyBtn.className = "copy-btn";
+        copyBtn.type = "button";
+        copyBtn.textContent = "복사";
+        copyBtn.addEventListener("click", () => copyToClipboard(textForCopy));
+
+        row.appendChild(label);
+        row.appendChild(ballsWrap);
+        row.appendChild(copyBtn);
+
+        resultsEl.appendChild(row);
+      }
+    }
+
+    document.getElementById("generateBtn").addEventListener("click", function () {
+      const countInput = document.getElementById("count");
+      let count = parseInt(countInput.value, 10);
+      if (isNaN(count) || count < 1) count = 1;
+      if (count > 10) count = 10;
+      countInput.value = count;
+      renderRows(count);
+    });
+
+    renderRows(5);
+  </script>
 </body>
 </html>
-
