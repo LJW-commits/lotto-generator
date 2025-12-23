@@ -131,7 +131,7 @@
       opacity: 0.95;
     }
 
-    /* ===== 통계 모드 선택 박스(추가) ===== */
+    /* ===== 통계 모드 선택 박스(2개 버튼, 1줄 고정) ===== */
     .mode-box {
       margin-bottom: 10px;
       padding: 10px 10px;
@@ -143,33 +143,29 @@
       gap: 8px;
     }
 
-    .mode-title {
-      font-size: 12px;
-      color: #b58900;
-    }
-
     .mode-options {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: 1fr 1fr; /* ✅ 2개만 한줄 */
       gap: 6px;
       align-items: center;
     }
 
-    /* 라디오를 버튼처럼 보이게 */
     .mode-opt {
       position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      padding: 8px 6px;
+      padding: 10px 8px;
       border-radius: 12px;
       border: 1px solid #ddd;
       background: #fff;
       cursor: pointer;
       user-select: none;
-      font-size: 12px;
+      font-size: 13px;
       color: #444;
+      white-space: nowrap;           /* ✅ 줄바꿈 방지 */
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .mode-opt input {
@@ -181,12 +177,6 @@
     .mode-opt.active {
       border-color: #ffb300;
       box-shadow: 0 0 0 2px rgba(255,179,0,0.20);
-    }
-
-    .mode-hint {
-      font-size: 11px;
-      color: #999;
-      line-height: 1.35;
     }
 
     /* 나의 행운번호 영역 */
@@ -206,6 +196,7 @@
       color: #b58900;
     }
 
+    /* 3칸 그리드로 고정(모바일에서 삐져나오는 문제 방지) */
     .lucky-inputs {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -238,12 +229,13 @@
       margin-top: 4px;
       display: flex;
       flex-direction: column;
-      gap: 5px;
+      gap: 10px;
       max-height: 380px;
       overflow-y: auto;
       padding-right: 2px;
     }
 
+    /* 한 줄을 라벨/공6개/복사 버튼 3칸으로 고정 */
     .row {
       display: grid;
       grid-template-columns: 44px 1fr 56px;
@@ -261,6 +253,7 @@
       white-space: nowrap;
     }
 
+    /* 공 6개를 무조건 6칸 그리드로 고정 => 스크롤 없음 */
     .balls {
       display: grid;
       grid-template-columns: repeat(6, minmax(0, 1fr));
@@ -282,11 +275,12 @@
       user-select: none;
     }
 
-    .ball.n1 { background: #f1c40f; }
-    .ball.n2 { background: #3498db; }
-    .ball.n3 { background: #e74c3c; }
-    .ball.n4 { background: #7f8c8d; }
-    .ball.n5 { background: #27ae60; }
+    /* 번호 구간별 색상 */
+    .ball.n1 { background: #f1c40f; } /* 1~10 노랑 */
+    .ball.n2 { background: #3498db; } /* 11~20 파랑 */
+    .ball.n3 { background: #e74c3c; } /* 21~30 빨강 */
+    .ball.n4 { background: #7f8c8d; } /* 31~40 회색 */
+    .ball.n5 { background: #27ae60; } /* 41~45 초록 */
 
     .copy-btn {
       width: 56px;
@@ -307,6 +301,7 @@
 
     .copy-btn:active { background: #f0f0f0; }
 
+    /* ===== 쿠팡 배너 ===== */
     .coupang-banner {
       margin-top: 12px;
       display: flex;
@@ -349,12 +344,14 @@
       transform: translateX(-50%) translateY(-4px);
     }
 
+    /* 더 작은 화면(아주 좁은 기종) 보정 */
     @media (max-width: 380px) {
       .row { grid-template-columns: 42px 1fr 52px; gap: 6px; }
       .balls { gap: 4px; }
       .ball { font-size: 12px; }
       .copy-btn { width: 52px; font-size: 10px; }
-      .mode-options { grid-template-columns: 1fr; }
+      /* ✅ 2개 버튼은 그대로 1줄 유지 (필요시 글자 줄여보정) */
+      .mode-opt { font-size: 12px; padding: 9px 6px; }
     }
 
     @media (max-width: 480px) {
@@ -370,7 +367,7 @@
       <div class="app-header">
         <div class="title-wrap">
           <h1>로또번호 생성기</h1>
-          <div class="subtitle">*1~1202회차(25.12.14) 당첨데이터 기반</div>
+          <div class="subtitle">*1~1202회차(25.12.14) 데이터 기반</div>
         </div>
         <div class="badge">6 / 45</div>
       </div>
@@ -383,23 +380,18 @@
         </button>
       </div>
 
-      <!-- (추가) 통계 가중치 모드 선택 -->
+      <!-- ✅ 2개 버튼만 / 1줄 -->
       <div class="mode-box">
         <div class="mode-options">
-          <label class="mode-opt" id="mode_low_wrap">
+          <label class="mode-opt" id="mode_low_wrap" title="덜 나온 번호 중심">
             <input type="radio" name="mode" id="mode_low" value="low" checked />
             덜 나온 번호 중심
           </label>
-          <label class="mode-opt" id="mode_high_wrap">
+          <label class="mode-opt" id="mode_high_wrap" title="많이 나온 번호 중심">
             <input type="radio" name="mode" id="mode_high" value="high" />
             많이 나온 번호 중심
           </label>
-          <label class="mode-opt" id="mode_rand_wrap">
-            <input type="radio" name="mode" id="mode_rand" value="random" />
-            완전 랜덤
-          </label>
         </div>
-        
       </div>
 
       <!-- 나의 행운번호 입력 영역 -->
@@ -410,7 +402,6 @@
           <input id="lucky2" type="number" min="1" max="45" placeholder="1~45" />
           <input id="lucky3" type="number" min="1" max="45" placeholder="1~45" />
         </div>
-        
       </div>
 
       <div class="results" id="results"></div>
@@ -457,19 +448,16 @@
       return checked ? checked.value : "low";
     }
 
-    // 버튼 스타일 active 처리
+    // 버튼 active 처리
     function syncModeActiveUI() {
       const low = document.getElementById("mode_low_wrap");
       const high = document.getElementById("mode_high_wrap");
-      const rnd = document.getElementById("mode_rand_wrap");
       low.classList.remove("active");
       high.classList.remove("active");
-      rnd.classList.remove("active");
 
       const mode = getMode();
       if (mode === "low") low.classList.add("active");
       if (mode === "high") high.classList.add("active");
-      if (mode === "random") rnd.classList.add("active");
     }
 
     // ===== 가중치 설계 =====
@@ -479,7 +467,7 @@
       const c = getCount(num);
       if (mode === "low") return (MAX_COUNT - c + 1);
       if (mode === "high") return (c - MIN_COUNT + 1);
-      return 1; // random
+      return 1;
     }
 
     function weightedPickOne(candidates, weights) {
@@ -512,23 +500,13 @@
       const mode = getMode();
       const picked = [...lucky];
 
-      // 후보군: 1~45 중 lucky 제외
       let candidates = ALL_NUMS.filter(n => !picked.includes(n));
 
       while (picked.length < 6) {
-        if (mode === "random") {
-          // 균등 랜덤
-          const idx = Math.floor(Math.random() * candidates.length);
-          const choice = candidates[idx];
-          picked.push(choice);
-          candidates.splice(idx, 1);
-        } else {
-          // 가중치 랜덤
-          const weights = candidates.map(n => getWeight(n, mode));
-          const choice = weightedPickOne(candidates, weights);
-          picked.push(choice);
-          candidates = candidates.filter(n => n !== choice);
-        }
+        const weights = candidates.map(n => getWeight(n, mode));
+        const choice = weightedPickOne(candidates, weights);
+        picked.push(choice);
+        candidates = candidates.filter(n => n !== choice);
       }
 
       picked.sort((a, b) => a - b);
@@ -618,11 +596,10 @@
       renderRows(count);
     });
 
-    // 모드 바뀌면 즉시 반영(원하면 즉시 재생성)
+    // 모드 변경 시 즉시 반영
     document.querySelectorAll('input[name="mode"]').forEach(el => {
       el.addEventListener("change", () => {
         syncModeActiveUI();
-        // 선택 바꾸면 바로 다시 뽑아주고 싶으면 아래 주석 해제
         renderRows(parseInt(document.getElementById("count").value, 10) || 5);
       });
     });
